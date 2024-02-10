@@ -1,16 +1,23 @@
 class Solution:
     def countSubstrings(self, s: str) -> int:
-        #(O(N^2)) --->TC
-        dp={}
-        count=0
-        for i in range(len(s)-1):
-            for j in range(i+1,len(s)+1):
-                if s[i:j] in dp:
-                    count+=1
-                    continue
-                else:
-                    if s[i:j] == s[j - 1:i - 1 if i != 0 else None:-1]:
-                        count += 1
-                        dp[s[i:j]]=1
-
-        return count+1
+        n = len(s)
+        dp = [[False] * n for _ in range(n)]
+        count = 0
+        
+        # base cases
+        for i in range(n):
+            dp[i][i] = True
+            count += 1
+        
+        for i in range(n-1):
+            dp[i][i+1] = (s[i] == s[i+1])
+            count += dp[i][i+1]
+        
+        # recurrence relation
+        for l in range(3, n+1):
+            for i in range(n-l+1):
+                j = i + l - 1
+                dp[i][j] = (s[i] == s[j]) and dp[i+1][j-1]
+                count += dp[i][j]
+        
+        return count
